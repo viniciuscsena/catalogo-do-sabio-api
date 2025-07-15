@@ -1,0 +1,175 @@
+openapi: 3.0.3
+info:
+  title: "O Catálogo do Sábio API"
+  version: "1.0.0"
+  description: "API REST para consulta de livros da livraria O Catálogo do Sábio."
+
+servers:
+  - url: "http://localhost:8080/api/v1"
+    description: "Servidor de desenvolvimento local"
+
+paths:
+  /books/:
+    get:
+      summary: "Lista todos os livros"
+      description: "Retorna uma lista de todos os livros cadastrados no catálogo."
+      responses:
+        "200":
+          description: "Lista de livros"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Book"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /books/{id}:
+    get:
+      summary: "Obtém um livro específico"
+      description: "Retorna os detalhes de um livro específico com base no ID fornecido."
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "ID do livro a ser buscado"
+          schema:
+            type: string 
+      responses:
+        "200":
+          description: "Detalhes do livro"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /books/genre/{genre}:
+    get:
+      summary: "Lista todos os livros de um gênero específico"
+      description: "Retorna uma lista de todos os livros de um gênero específico."
+      parameters:
+        - name: genre
+          in: path
+          required: true
+          description: "Gênero do livro a ser buscado"
+          schema:
+            type: string 
+      responses:
+        "200":
+          description: "Lista de livros"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Book"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /books/author/{author}:
+    get:
+      summary: "Lista todos os livros de um autor específico"
+      description: "Retorna uma lista de todos os livros de um autor específico."
+      parameters:
+        - name: author
+          in: path
+          required: true
+          description: "Autor do livro a ser buscado"
+          schema:
+            type: string 
+      responses:
+        "200":
+          description: "Lista de livros"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Book"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+components:
+  schemas:
+    Book:
+      type: object
+      description: "Representa a estrutura de dados de um livro no catálogo."
+      required: 
+        - id
+        - title
+        - authors
+        - genres
+      properties:
+        id:
+          type: string
+          description: "Identificador único do livro (ex: UUID)"
+        title:
+          type: string
+          description: "Título do livro"
+        authors: 
+          type: array
+          items:
+            type: string
+          description: "Lista de autores do livro"
+        genres: 
+          type: array
+          items:
+            type: string
+          description: "Lista de gêneros aos quais o livro pertence"
+        description: # <-- CORREÇÃO: Aninhamento correto
+          type: string
+          description: "Sinopse ou descrição do livro"
+        price:
+          type: number
+          format: double 
+          description: "Preço do livro"
+        stock:
+          type: integer
+          format: int32
+          description: "Quantidade em estoque"
+    ApiError:
+      type: object
+      description: "Representa a estrutura de uma resposta de erro na API."
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: "Data e hora em que o erro ocorreu."
+        error:
+          type: string
+          description: "Uma descrição curta do erro (ex: 'Not Found')."
+        message:
+          type: string
+          description: "Uma mensagem detalhada sobre o erro."
+  responses:
+    NotFound:
+      description: "O recurso solicitado não foi encontrado."
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    BadRequest:
+      description: "A requisição é inválida ou mal formada."
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    InternalServerError:
+      description: "Ocorreu um erro interno no servidor."
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
