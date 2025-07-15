@@ -103,6 +103,25 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /books/recently-viewed:
+    get:
+      summary: "Lista todos os livros visualizados recentemente pelo usuário"
+      description: "Retorna uma lista de todos os livros visualizados recentemente pelo usuário"
+      parameters:
+        - $ref: '#/components/parameters/ClientIdHeader'
+      responses:
+        "200":
+          description: "Lista de livros"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Book"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 components:
   parameters: # <-- NOVA SEÇÃO
     ClientIdHeader:
@@ -112,7 +131,6 @@ components:
       description: "Identificador único do cliente/sessão para rastrear livros visualizados."
       schema:
         type: string
-        format: uuid
   schemas:
     Book:
       type: object
@@ -165,7 +183,7 @@ components:
           type: string
           description: "Uma mensagem detalhada sobre o erro."
         status:
-          type: int
+          type: integer
           description: "Status HTTP da resposta da requisição."
   responses:
     NotFound:

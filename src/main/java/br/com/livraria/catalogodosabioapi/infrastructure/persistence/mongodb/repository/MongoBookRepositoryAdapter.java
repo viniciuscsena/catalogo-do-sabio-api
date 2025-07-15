@@ -56,4 +56,13 @@ public class MongoBookRepositoryAdapter implements BookRepositoryPort {
         log.debug("Consulta à base de dados pelo autor '{}' retornou {} documentos.", author, books.size());
         return bookDocumentMapper.toDomain(books);
     }
+
+    @Override
+    @Cacheable(value =  "booksByIdList", key = "#ids")
+    public List<BookEntity> findAllByIds(List<String> ids) {
+        log.debug("Buscando livros na base de dados pela lista de {} IDs.", ids.size());
+        List<BookDocument> documents = springDataBookMongoRepository.findAllById(ids);
+        log.debug("Consulta por múltiplos IDs retornou {} documentos.", documents.size());
+        return bookDocumentMapper.toDomain(documents);
+    }
 }

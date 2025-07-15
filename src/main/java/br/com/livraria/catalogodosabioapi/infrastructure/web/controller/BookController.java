@@ -3,6 +3,7 @@ package br.com.livraria.catalogodosabioapi.infrastructure.web.controller;
 import br.com.livraria.catalogodosabioapi.api.BooksApi;
 import br.com.livraria.catalogodosabioapi.core.domain.BookEntity;
 import br.com.livraria.catalogodosabioapi.core.usecase.boundary.in.BookUseCase;
+import br.com.livraria.catalogodosabioapi.core.usecase.boundary.in.RecentlyViewedUseCase;
 import br.com.livraria.catalogodosabioapi.infrastructure.web.mapper.BookApiMapper;
 import br.com.livraria.catalogodosabioapi.model.Book;
 import lombok.RequiredArgsConstructor;
@@ -19,15 +20,18 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping("/v1")
 public class BookController implements BooksApi {
+
     private final BookUseCase bookUseCase;
+    private final RecentlyViewedUseCase recentlyViewedUseCase;
 
     private final BookApiMapper bookApiMapper;
 
     @Override
-    public ResponseEntity<Book> booksIdGet(String id, UUID xClientID) {
+    public ResponseEntity<Book> booksIdGet(String id, String xClientID) {
         log.info("Buscando livro por ID: {}", id);
         BookEntity bookEntity = bookUseCase.findById(id);
         Book book = bookApiMapper.toApi(bookEntity);
+        recentlyViewedUseCase.track(xClientID, id);
         log.info("Busca por ID {} finalizada com sucesso.", id);
         return ResponseEntity.ok(book);
     }
@@ -56,6 +60,15 @@ public class BookController implements BooksApi {
         List<BookEntity> bookEntityList = bookUseCase.findByGenre(genre);
         List<Book> bookList = bookApiMapper.toApi(bookEntityList);
         log.info("Busca por gênero '{}' finalizada. {} livros encontrados.", genre, bookList.size());
+        return ResponseEntity.ok(bookList);
+    }
+
+    @Override
+    public ResponseEntity<List<Book>> booksRecentlyViewedGet(String xClientID) {
+        log.info("Buscando livros vistos recentemente para o usuario: '{}'", xClientID);
+        List<BookEntity> bookEntityList = recentlyViewedUseCase.find(xClientID);
+        List<Book> bookList = bookApiMapper.toApi(bookEntityList);
+        log.info("Busca por recentes do usuario '{}' finalizada. {} livros encontrados.", xClientID, bookList.size());
         return ResponseEntity.ok(bookList);
     }
 }

@@ -36,4 +36,9 @@ public class BookUseCaseImpl implements BookUseCase {
     public List<BookEntity> findByAuthor(String author) {
         return bookRepositoryPort.findByAuthor(author);
     }
+
+    @Override
+    public List<BookEntity> findAllByIds(List<String> ids) {
+        return bookRepositoryPort.findAllByIds(ids);
+    }
 }

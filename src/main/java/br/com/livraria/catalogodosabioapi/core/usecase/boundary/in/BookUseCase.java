@@ -10,4 +10,5 @@ public interface BookUseCase {
     BookEntity findById(String id);
     List<BookEntity> findByGenre(String genre);
     List<BookEntity> findByAuthor(String author);
+    List<BookEntity> findAllByIds(List<String> ids);
 }
