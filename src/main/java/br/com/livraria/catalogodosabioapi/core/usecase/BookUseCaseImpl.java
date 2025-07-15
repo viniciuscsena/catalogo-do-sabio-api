@@ -3,7 +3,7 @@ package br.com.livraria.catalogodosabioapi.core.usecase;
 import java.util.List;
 import java.util.Optional;
 
-import br.com.livraria.catalogodosabioapi.core.domain.Book;
+import br.com.livraria.catalogodosabioapi.core.domain.BookEntity;
 import br.com.livraria.catalogodosabioapi.core.domain.exception.BookNotFoundException;
 import br.com.livraria.catalogodosabioapi.core.usecase.boundary.in.BookUseCase;
 import br.com.livraria.catalogodosabioapi.core.usecase.boundary.out.BookRepositoryPort;
@@ -17,23 +17,23 @@ public class BookUseCaseImpl implements BookUseCase {
     }
 
     @Override
-    public List<Book> findAll() {
+    public List<BookEntity> findAll() {
         return bookRepositoryPort.findAll();
     }
 
     @Override
-    public Book findById(String id) {
-        Optional<Book> bookOptional = bookRepositoryPort.findById(id);
+    public BookEntity findById(String id) {
+        Optional<BookEntity> bookOptional = bookRepositoryPort.findById(id);
         return bookOptional.orElseThrow(() -> new BookNotFoundException(id));
     }
 
     @Override
-    public List<Book> findByGenre(String genre) {
+    public List<BookEntity> findByGenre(String genre) {
         return bookRepositoryPort.findByGenre(genre);
     }
 
     @Override
-    public List<Book> findByAuthor(String author) {
+    public List<BookEntity> findByAuthor(String author) {
         return bookRepositoryPort.findByAuthor(author);
     }
 }

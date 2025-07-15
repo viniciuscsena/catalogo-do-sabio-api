@@ -154,6 +154,9 @@ components:
         message:
           type: string
           description: "Uma mensagem detalhada sobre o erro."
+        status:
+          type: int
+          description: "Status HTTP da resposta da requisição."
   responses:
     NotFound:
       description: "O recurso solicitado não foi encontrado."

@@ -1,18 +1,19 @@
 package br.com.livraria.catalogodosabioapi.infrastructure.persistence.mongodb.mapper;
 
 
-import br.com.livraria.catalogodosabioapi.core.domain.Book;
+import br.com.livraria.catalogodosabioapi.core.domain.BookEntity;
 import br.com.livraria.catalogodosabioapi.infrastructure.persistence.mongodb.document.BookDocument;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface BookDocumentMapper {
 
-    Book toDomain(BookDocument document);
+    BookEntity toDomain(BookDocument bookDocument);
 
-    List<Book> toDomain(List<BookDocument> documents);
+    List<BookEntity> toDomain(List<BookDocument> bookDocuments);
 
-    BookDocument toDocument(Book book);
+    BookDocument toDocument(BookEntity bookEntity);
 }

@@ -15,3 +15,8 @@ google:
     api-url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
     api-key: ${GOOGLE_API_KEY}
     request-schema: "classpath:ai/gemini-request-schema.json"
+
+logging:
+  level:
+    root: INFO
+    br.com.livraria.catalogodosabioapi: DEBUG
