@@ -8,20 +8,23 @@ import br.com.livraria.catalogodosabioapi.model.Book;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @Slf4j
 @RequiredArgsConstructor
+@RequestMapping("/v1")
 public class BookController implements BooksApi {
     private final BookUseCase bookUseCase;
 
     private final BookApiMapper bookApiMapper;
 
     @Override
-    public ResponseEntity<Book> booksIdGet(String id) {
+    public ResponseEntity<Book> booksIdGet(String id, UUID xClientID) {
         log.info("Buscando livro por ID: {}", id);
         BookEntity bookEntity = bookUseCase.findById(id);
         Book book = bookApiMapper.toApi(bookEntity);

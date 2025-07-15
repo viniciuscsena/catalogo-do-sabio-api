@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,12 +22,16 @@ public class MongoBookRepositoryAdapter implements BookRepositoryPort {
     private final BookDocumentMapper bookDocumentMapper;
 
     @Override
+    @Cacheable("books")
     public List<BookEntity> findAll() {
+        log.debug("Buscando todos os livros na base de dados");
         List<BookDocument> books = springDataBookMongoRepository.findAll();
+        log.debug("Consulta a base de dados retornou {} documentos", books.size());
         return bookDocumentMapper.toDomain(books);
     }
 
     @Override
+    @Cacheable(value = "book", key = "#id")
     public Optional<BookEntity> findById(String id) {
         log.debug("Buscando livro na base de dados pelo id: {}", id);
         Optional<BookDocument> bookDocumentOptional = springDataBookMongoRepository.findById(id);
@@ -35,6 +40,7 @@ public class MongoBookRepositoryAdapter implements BookRepositoryPort {
     }
 
     @Override
+    @Cacheable(value = "booksByGenre", key = "#genre")
     public List<BookEntity> findByGenre(String genre) {
         log.debug("Buscando livros na base de dados pelo gênero {}", genre);
         List<BookDocument> books = springDataBookMongoRepository.findByGenresContaining(genre);
@@ -43,6 +49,7 @@ public class MongoBookRepositoryAdapter implements BookRepositoryPort {
     }
 
     @Override
+    @Cacheable(value = "booksByAuthor", key = "#author")
     public List<BookEntity> findByAuthor(String author) {
         log.debug("Buscando livros na base de dados pelo autor {}", author);
         List<BookDocument> books = springDataBookMongoRepository.findByAuthorsContaining(author);

@@ -1,8 +1,9 @@
 package br.com.livraria.catalogodosabioapi.core.domain;
 
+import java.io.Serializable;
 import java.util.List;
 
-public record BookEntity(
+public record BookEntity (
     String id,
     String title,
     List<String> authors,
@@ -10,5 +11,5 @@ public record BookEntity(
     String description,
     Double price,
     Integer stock
-) {
+)implements Serializable {
 }

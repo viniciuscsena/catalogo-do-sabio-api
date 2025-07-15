@@ -1,3 +1,6 @@
+server:
+  servlet:
+    context-path: /catalogo-do-sabio
 spring:
   application:
     name: catalogo-do-sabio-api

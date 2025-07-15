@@ -5,7 +5,7 @@ info:
   description: "API REST para consulta de livros da livraria O Catálogo do Sábio."
 
 servers:
-  - url: "http://localhost:8080/api/v1"
+  - url: "http://localhost:8080/catalogo-do-sabio/v1"
     description: "Servidor de desenvolvimento local"
 
 paths:
@@ -36,7 +36,8 @@ paths:
           required: true
           description: "ID do livro a ser buscado"
           schema:
-            type: string 
+            type: string
+        - $ref: '#/components/parameters/ClientIdHeader'
       responses:
         "200":
           description: "Detalhes do livro"
@@ -103,6 +104,15 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
 components:
+  parameters: # <-- NOVA SEÇÃO
+    ClientIdHeader:
+      name: X-Client-ID
+      in: header
+      required: false # É opcional, pois nem toda chamada precisa rastrear a visualização
+      description: "Identificador único do cliente/sessão para rastrear livros visualizados."
+      schema:
+        type: string
+        format: uuid
   schemas:
     Book:
       type: object
