@@ -23,7 +23,6 @@ public class BookController implements BooksApi {
 
     private final BookUseCase bookUseCase;
     private final RecentlyViewedUseCase recentlyViewedUseCase;
-
     private final BookApiMapper bookApiMapper;
 
     @Override

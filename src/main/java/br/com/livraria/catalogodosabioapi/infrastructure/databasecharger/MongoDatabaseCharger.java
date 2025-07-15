@@ -48,8 +48,6 @@ public class MongoDatabaseCharger implements CommandLineRunner {
 
         String prompt = "Gere uma lista de exatamente 80 livros, baseado no json de resposta que esta configurado. A 70% dos livros devem ser reais, com informações de livros famosos. Os outros 30%, gere livros fictícios criativos com autores também fictícios. Todos os livros devem ter as informações em português do Brasil.";
 
-        // Constrói o corpo da requisição com o schema
-
         try {
             Map<String, Object> requestBody = buildRequestBody(prompt);
             List<BookDocument> booksToSeed = webClient.post()
