@@ -14,6 +14,4 @@ public interface BookDocumentMapper {
     BookEntity toDomain(BookDocument bookDocument);
 
     List<BookEntity> toDomain(List<BookDocument> bookDocuments);
-
-    BookDocument toDocument(BookEntity bookEntity);
 }

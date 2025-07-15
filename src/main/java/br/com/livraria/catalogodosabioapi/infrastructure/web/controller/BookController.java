@@ -50,7 +50,7 @@ public class BookController implements BooksApi {
     @Override
     public ResponseEntity<List<Book>> booksGenreGenreGet(String genre) {
         log.info("Buscando livros por gênero: '{}'", genre);
-        List<BookEntity> bookEntityList = bookUseCase.findByAuthor(genre);
+        List<BookEntity> bookEntityList = bookUseCase.findByGenre(genre);
         List<Book> bookList = bookApiMapper.toApi(bookEntityList);
         log.info("Busca por gênero '{}' finalizada. {} livros encontrados.", genre, bookList.size());
         return ResponseEntity.ok(bookList);
