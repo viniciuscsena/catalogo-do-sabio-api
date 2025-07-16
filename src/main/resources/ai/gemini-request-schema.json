@@ -1,0 +1,21 @@
+{
+  "type": "object",
+  "properties": {
+    "books": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "authors": { "type": "array", "items": { "type": "string" } },
+          "genres": { "type": "array", "items": { "type": "string" } },
+          "description": { "type": "string" },
+          "price": { "type": "number" },
+          "stock": { "type": "integer" }
+        },
+        "required": ["title", "authors", "genres", "description", "price", "stock"]
+      }
+    }
+  },
+  "required": ["books"]
+}

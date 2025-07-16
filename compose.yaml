@@ -1,13 +1,23 @@
 services:
   mongodb:
-    image: 'mongo:latest'
+    image: 'mongo:7.0'
+    container_name: catalogo-mongo
+    ports:
+      - "27017:27017"
     environment:
-      - 'MONGO_INITDB_DATABASE=mydatabase'
-      - 'MONGO_INITDB_ROOT_PASSWORD=secret'
-      - 'MONGO_INITDB_ROOT_USERNAME=root'
-    ports:
-      - '27017'
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=pass
+    volumes:
+      - mongo_data:/data/db
+
   redis:
-    image: 'redis:latest'
+    image: 'redis:7.2-alpine'
+    container_name: catalogo-redis
     ports:
-      - '6379'
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  mongo_data:
+  redis_data:

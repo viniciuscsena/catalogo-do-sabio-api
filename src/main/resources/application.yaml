@@ -1,0 +1,25 @@
+server:
+  servlet:
+    context-path: /catalogo-do-sabio
+spring:
+  application:
+    name: catalogo-do-sabio-api
+  profiles:
+    active: dev
+    data:
+      mongodb:
+        uri: mongodb://user:pass@localhost:27017/catalog?authSource=admin
+      redis:
+        host: localhost
+        port: 6379
+
+google:
+  aistudio:
+    api-url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+    api-key: ${GOOGLE_API_KEY}
+    request-schema: "classpath:ai/gemini-request-schema.json"
+
+logging:
+  level:
+    root: INFO
+    br.com.livraria.catalogodosabioapi: DEBUG
