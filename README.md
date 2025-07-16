@@ -81,7 +81,7 @@ Se desejar subir os containers de forma independente da aplicação, siga os pas
     ```bash
     docker-compose down
     ```
-    
+
 PS: Não esqueça de se certificar que o docker desktop esta rodando :).
 
 ### 1.4. Execução da Aplicação Java
@@ -126,7 +126,7 @@ Após a execução bem-sucedida da sua aplicação Java, o swagger da API estar�
     ```bash
     curl http://localhost:8080/catalogo-do-sabio/v1/books/author/Frank%20Herbert
     ```
-  (Aqui, o '%20' faz o papel do backspace na busca)
+  (Aqui, o '%20' faz o papel do espaço na busca)
 
 * **Listar livros visualizados recentemente (com o mesmo X-Client-ID usado acima):**
     ```bash
@@ -137,7 +137,7 @@ Após a execução bem-sucedida da sua aplicação Java, o swagger da API estar�
 
 ## 2. Visão Geral do Desafio
 
-Este projeto consiste em desenvolver uma api para um sistema de uma livraria, capaz de consultar livros de uma base de dados, que seria populada também para fim de teste pela api. Apesar de ter um escopo supostamente simples, a liberdade criativa foi um ponto crucial na definição de como ela seria implementada. 
+Este projeto consiste em desenvolver uma api para um sistema de uma livraria, capaz de consultar livros de uma base de dados, que seria populada também para fim de teste pela api. Apesar de ter um escopo supostamente simples, a liberdade criativa foi um ponto crucial na definição de como ela seria implementada.
 Minha abordagem consistiu em primeiro analisar os requisitos e definir as tecnologias. Qual banco de dados usar? Como extrair as informações dos livros? Qual tipo de arquitetura de sistema?
 A dosagem de o que é interessante e o que seria um exagero (overengineering) não é tão clara, mas os requisitos citando justamente a liberdade criativa me incentivaram a ousar sem fugir do escopo, e ainda sim desenvolver um sistema escalavel, com boas tecnologias e bons padrões de desenvolvimento.
 
@@ -170,42 +170,85 @@ A aplicação foi desenvolvida seguindo os princípios da **Clean Architecture (
     * **`infrastructure.configuration`**: Configurações de beans do Spring (ex: `WebClient`, `BookUseCase`, `RecentlyViewedUseCase`).
     * **`infrastructure.databasecharger`**: Componente responsável pela carga inicial de dados.
 
+**Estrutura de Pacotes:**
+```
+└── br.com.livraria.catalogodosabioapi
+    ├── core
+    │   ├── domain
+    │   │   ├── exception
+    │   │   │   └── BookNotFoundException.java
+    │   │   └── BookEntity.java
+    │   └── usecase
+    │       ├── boundary
+    │       │   ├── in
+    │       │   │   └── BookUseCase.java
+    │       │   │   └── RecentlyViewedUseCase.java
+    │       │   └── out
+    │       │       └── BookRepositoryPort.java
+    │       │       └── RecentlyViewedPort.java
+    │       ├── BookUseCaseImpl.java
+    │       └── RecentlyViewedUseCaseImpl.java
+    │
+    └── infrastructure
+        ├── configuration
+        │   ├── AiStudioProperties.java
+        │   └── BeanConfiguration.java
+        ├── databasecharger
+        │   └── MongoDatabaseCharger.java
+        ├── persistence
+        │   ├── mongodb
+        │   │   ├── document
+        │   │   │   └── BookDocument.java
+        │   │   ├── mapper
+        │   │   │   └── BookDocumentMapper.java
+        │   │   └── repository
+        │   │       ├── MongoBookRepositoryAdapter.java
+        │   │       └── SpringDataBookMongoRepository.java
+        │   └── redis
+        │       └── RedisRecentlyViewedAdapter.java
+        └── web
+            ├── controller
+            │   ├── BookController.java
+            │   └── GlobalExceptionHandler.java
+            └── mapper
+                └── BookApiMapper.java
+```
 
 ### 3.2. Arquitetura Técnica
 
 A solução utiliza as seguintes tecnologias:
 
 * **Linguagem de Programação:** Java 21
-Esta é a versão do java que balanceia entre a estabilidade e a modernidade, por isso foi escolhida.
+  Esta é a versão do java que balanceia entre a estabilidade e a modernidade, por isso foi escolhida.
 
 * **Framework:** Spring Boot 3.3.1
-Mesmo cenário, uma das últimas versões estáveis do Spring. E com maior compatibilidade com as demais dependências
+  Mesmo cenário, uma das últimas versões estáveis do Spring. E com maior compatibilidade com as demais dependências
 
 * **Banco de Dados:** MongoDB (para armazenamento persistente de livros)
-A princípio, a questão era: trabalhar com um banco de dados não relacional ou um relacional? 
-A principal vantagem de um banco de dados relacional, que é sua integridade e consistência nos dados não era uma realidade necessária nese projeto. O requisito é uma api eficiente, que só teria consultas de rápido acesso e pouquissimas ações de atualização ou inserção. Não tinha mais de uma entidade complexa que precisaria se relacionar com outras, então a aplicação do modelo relacional, se corretamente dentro das Formas Normais, causaria uma complexidade desnecessária.
-Em comparação, um não relacional oferece um schema flexível, alta disponibilidade e escalabilidade horizontal e recuperação eficiente para consultas de catálogo, pois todas as informações, como autor e genero, estão armazenadas no mesmo documento, sem necessidades de joins.
+  A princípio, a questão era: trabalhar com um banco de dados não relacional ou um relacional?
+  A principal vantagem de um banco de dados relacional, que é sua integridade e consistência nos dados não era uma realidade necessária nese projeto. O requisito é uma api eficiente, que só teria consultas de rápido acesso e pouquissimas ações de atualização ou inserção. Não tinha mais de uma entidade complexa que precisaria se relacionar com outras, então a aplicação do modelo relacional, se corretamente dentro das Formas Normais, causaria uma complexidade desnecessária.
+  Em comparação, um não relacional oferece um schema flexível, alta disponibilidade e escalabilidade horizontal e recuperação eficiente para consultas de catálogo, pois todas as informações, como autor e genero, estão armazenadas no mesmo documento, sem necessidades de joins.
 
 * **Cache e Estruturas de Dados:** Redis (para cache de consultas e a funcionalidade "Visualizados Recentemente")
-O uso do Cache ajuda a melhorar ainda mais a eficiência e diminuir os tempos de reposta. Escolher o redis para isso apresenta vantagens em relação a outras tecnologias de caching. O Redis suporta diversasr estruturas de dados, e ter uma lista em cache foi fundamental para a funcionalidade de Vistos recentemente. Logo a complexidade adicional que o redis trás é bem menor do que as vantagens do seu uso. Além de ser uma ferramenta muito popular e usada no mercado.
+  O uso do Cache ajuda a melhorar ainda mais a eficiência e diminuir os tempos de reposta. Escolher o redis para isso apresenta vantagens em relação a outras tecnologias de caching. O Redis suporta diversasr estruturas de dados, e ter uma lista em cache foi fundamental para a funcionalidade de Vistos recentemente. Logo a complexidade adicional que o redis trás é bem menor do que as vantagens do seu uso. Além de ser uma ferramenta muito popular e usada no mercado.
 
 * **API REST:** Implementada com Spring WebFlux (utilizando `WebClient` para chamadas externas)
-Este é o Client recomendado pelo próprio spring framework, muito sofisticado, com suporte a requisições assincronas e facilmente utilizavel por ser gerenciado e acoplado ao contexto do spring.
+  Este é o Client recomendado pelo próprio spring framework, muito sofisticado, com suporte a requisições assincronas e facilmente utilizavel por ser gerenciado e acoplado ao contexto do spring.
 
 * **Mapeamento de Objetos:** MapStruct (para mapear entre entidades de domínio, documentos de persistência e modelos da API)
-Uma biblioteca consolidada para simplificar a transferência de dados entre camadas do serviço, pois com facilidade gera os mapeamentos necessários.
+  Uma biblioteca consolidada para simplificar a transferência de dados entre camadas do serviço, pois com facilidade gera os mapeamentos necessários.
 
 * **Documentação da API:** OpenAPI 3.0.3
-A utilização do conceito de Contract First para desenvolvimento de apis, além da facilidade de gerar o swagger de forma desacoplada do código java em sí, com o uso do openapi-generator, é possível gerar a camada que recebe as requisições rest em tempo de build, o que trás muita facilidade para desenvolver a partir disso. 
+  A utilização do conceito de Contract First para desenvolvimento de apis, além da facilidade de gerar o swagger de forma desacoplada do código java em sí, com o uso do openapi-generator, é possível gerar a camada que recebe as requisições rest em tempo de build, o que trás muita facilidade para desenvolver a partir disso.
 
 * **Geração de Dados:** Google AI Studio (API Gemini 2.0 Flash) para popular o banco de dados.
-Utilizar uma ia para gerar os dados não seria uma ideia que eu teria naturalmente, mas por ter essa possibilidade descrita no desafio e já ser uma coisa que eu gosto de aprender sobre e já havia, inclusive, feito um projeto pessoal utilizando o AI Studio, resolvi aproveitar para trazer um toque de criatividade para a api, juntanto com um asunto que está muito em alta.
+  Utilizar uma ia para gerar os dados não seria uma ideia que eu teria naturalmente, mas por ter essa possibilidade descrita no desafio e já ser uma coisa que eu gosto de aprender sobre e já havia, inclusive, feito um projeto pessoal utilizando o AI Studio, resolvi aproveitar para trazer um toque de criatividade para a api, juntanto com um asunto que está muito em alta.
 
 * **Testes:** JUnit 5, Mockito, Spring Boot Test, Testcontainers (para MongoDB e Redis em testes de integração).
-Os testes, para garantir a qualidade e o funcionamento unitário do código é muito importante, e além das tecnologias já padrão do java, o testcontainers, para fazer os testes de integração facilitam muito. 
+  Os testes, para garantir a qualidade e o funcionamento unitário do código é muito importante, e além das tecnologias já padrão do java, o testcontainers, para fazer os testes de integração facilitam muito.
 
 * **Containerização:** Docker e Docker Compose.
-A forma mais facil e eficiente de configurar containers para subir localmente e integrar com apis durante os testes
+  A forma mais facil e eficiente de configurar containers para subir localmente e integrar com apis durante os testes
 
 ---
 
@@ -222,6 +265,7 @@ A forma mais facil e eficiente de configurar containers para subir localmente e 
 
 * O Redis é utilizado como um cache distribuído para otimizar as consultas frequentes.
 * As anotações `@Cacheable` do Spring Cache são aplicadas nos métodos `findAll`, `findById`, `findByGenre`, `findByAuthor` e `findAllByIds` do `MongoBookRepositoryAdapter`. Isso garante que, após a primeira consulta ao MongoDB, os resultados sejam armazenados no Redis, e chamadas subsequentes para os mesmos parâmetros recuperem os dados diretamente do cache, reduzindo a carga no banco de dados.
+* **Expiração de Cache (TTL):** Foram definidos tempos de expiração (Time To Live) diferentes para cada tipo de cache através de um bean `RedisCacheManagerBuilderCustomizer`. Caches de itens individuais (`book`, `booksByIds`) possuem um TTL maior (1 hora), enquanto caches de listagens (`books`, `booksByGenre`) possuem um TTL menor (10 minutos) para refletir novas adições ao catálogo mais rapidamente.
 
 ### 4.3. Funcionalidade "Visualizados Recentemente"
 
@@ -229,13 +273,14 @@ A forma mais facil e eficiente de configurar containers para subir localmente e 
 * Quando um livro é consultado via `GET /books/{id}`, o ID do livro é adicionado à lista de visualizados recentemente do cliente no Redis.
 * A operação de salvamento no Redis é **síncrona** no `BookController`. A decisão de manter síncrona foi baseada na premissa de que a operação de cache no Redis é extremamente rápida e não impactaria significativamente o tempo de resposta da API para a busca principal.
 * A lista é limitada a um número máximo de itens (`MAX_ITEMS = 10`) para evitar o crescimento excessivo e manter apenas os itens mais relevantes.
+* **Expiração da Lista:** A lista de visualizados de cada utilizador possui um TTL (Time To Live) de **5 dias**. Sempre que um novo livro é adicionado, o tempo de vida da lista é renovado, garantindo que ela só expire após 5 dias de inatividade do utilizador.
 
 ### 4.4. Aquisição e Geração de Dados (Google AI Studio / Seeder)
 
 * A aplicação inclui um `CommandLineRunner` (`MongoDatabaseCharger`) que é executado no perfil `dev` (`spring.profiles.active=dev`).
 * Este seeder verifica se o banco de dados MongoDB está vazio. Se estiver, ele faz uma chamada à API do Google AI Studio (Gemini 2.0 Flash) para gerar uma lista de 80 livros (70% reais, 30% fictícios).
 * A integração com a API de IA é feita via `WebClient` e `ObjectMapper` para construir a requisição com o `responseSchema` JSON e parsear a resposta.
-* A configuração para a chaamda foi feita baseado no modelo que o próprio AI Studio fornece quando utilizado através da sua plataforma. 
+* A configuração para a chaamda foi feita baseado no modelo que o próprio AI Studio fornece quando utilizado através da sua plataforma.
 * **Importante:** A chave da API do Google AI Studio deve ser configurada via variável de ambiente `GOOGLE_API_KEY`.
 
 ### 4.5. API REST (Endpoints)
@@ -277,7 +322,7 @@ A API expõe os seguintes endpoints sob o prefixo `/v1`:
 * **Estrutura de Pacotes:** Organizada para refletir a Clean Architecture.
 * **Lombok:** Reduz o boilerplate de código (getters, setters, construtores).
 * **Logging:** Utilização de `slf4j` para logs informativos e de debug.
-* **Testes Unitários:** Cobertura significativa das camadas de domínio e aplicação.
+* **Testes Unitários:** Cobertura significativa de todas as classes (Exceto POJOs/DTOs).
 * **Testes de Integração:** Validação dos fluxos completos da API com dependências reais (MongoDB, Redis) via Testcontainers.
 
 ---

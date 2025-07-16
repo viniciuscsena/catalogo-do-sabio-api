@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -51,12 +52,10 @@ class RedisRecentlyViewedAdapterTest {
         redisRecentlyViewedAdapter.save(clientId, bookId);
 
         // Assert
-        // Verifica se o livro foi removido (para evitar duplicatas e mover para o topo)
         verify(listOps, times(1)).remove(key, 0, bookId);
-        // Verifica se o livro foi adicionado no início da lista
         verify(listOps, times(1)).leftPush(key, bookId);
-        // Verifica se a lista foi truncada para o tamanho máximo
         verify(listOps, times(1)).trim(key, 0, MAX_ITEMS - 1);
+        verify(redisTemplate, times(1)).expire(any(String.class), any(Duration.class));
     }
 
     @Test
