@@ -12,6 +12,11 @@ spring:
       redis:
         host: localhost
         port: 6379
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/sabio-realm
 
 google:
   aistudio:
@@ -19,7 +24,19 @@ google:
     api-key: ${GOOGLE_API_KEY}
     request-schema: "classpath:ai/gemini-request-schema.json"
 
+caching:
+  ttls:
+    book: 1h
+    booksByIds: 1h
+    books: 10m
+    booksByGenre: 10m
+    booksByAuthor: 10m
+
 logging:
   level:
     root: INFO
     br.com.livraria.catalogodosabioapi: DEBUG
+
+springdoc:
+  swagger-ui:
+    url: /openapi.yaml

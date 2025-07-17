@@ -8,6 +8,9 @@ servers:
   - url: "http://localhost:8080/catalogo-do-sabio/v1"
     description: "Servidor de desenvolvimento local"
 
+security:
+  - bearerAuth: []
+
 paths:
   /books/:
     get:
@@ -123,11 +126,17 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
 components:
-  parameters: # <-- NOVA SEÇÃO
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "Insira o token JWT obtido do Keycloak. Exemplo: Bearer eyJhbGciOi..."
+  parameters:
     ClientIdHeader:
       name: X-Client-ID
       in: header
-      required: false # É opcional, pois nem toda chamada precisa rastrear a visualização
+      required: false
       description: "Identificador único do cliente/sessão para rastrear livros visualizados."
       schema:
         type: string
@@ -157,7 +166,7 @@ components:
           items:
             type: string
           description: "Lista de gêneros aos quais o livro pertence"
-        description: # <-- CORREÇÃO: Aninhamento correto
+        description:
           type: string
           description: "Sinopse ou descrição do livro"
         price:

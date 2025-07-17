@@ -7,6 +7,7 @@ import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,13 +17,14 @@ public class RedisRecentlyViewedAdapter implements RecentlyViewedPort {
 
     private static final String KEY_PREFIX = "recently_viewed:";
     private static final int MAX_ITEMS = 10;
+    private static final Duration TTL = Duration.ofDays(5);
 
     private final RedisTemplate<String, String> redisTemplate;
     private final ListOperations<String, String> listOps;
 
     public RedisRecentlyViewedAdapter(RedisTemplate<String, String> redisTemplate) {
         this.redisTemplate = redisTemplate;
-        this.listOps = redisTemplate.opsForList(); // Obtenha ListOperations do RedisTemplate
+        this.listOps = redisTemplate.opsForList();
         log.info("RedisRecentlyViewedAdapter inicializado. ListOperations obtido do RedisTemplate.");
     }
 
@@ -36,6 +38,8 @@ public class RedisRecentlyViewedAdapter implements RecentlyViewedPort {
         listOps.leftPush(key, bookId);
 
         listOps.trim(key, 0, MAX_ITEMS - 1);
+
+        redisTemplate.expire(key, TTL);
     }
 
     @Override

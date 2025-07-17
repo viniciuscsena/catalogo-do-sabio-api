@@ -11,12 +11,23 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class BeanConfigurationTest {
@@ -27,6 +38,8 @@ class BeanConfigurationTest {
     private RecentlyViewedPort recentlyViewedPort;
     @Mock
     private BookUseCase bookUseCase;
+    @Mock
+    private CachingProperties cachingProperties;
 
     private BeanConfiguration beanConfiguration;
 
@@ -65,5 +78,39 @@ class BeanConfigurationTest {
         // Assert
         assertNotNull(recentlyViewedUseCaseBean, "O bean RecentlyViewedUseCase não deve ser nulo.");
         assertTrue(recentlyViewedUseCaseBean instanceof RecentlyViewedUseCaseImpl, "O bean RecentlyViewedUseCase deve ser uma instância de RecentlyViewedUseCaseImpl.");
+    }
+
+    @Test
+    @DisplayName("Deve customizar o RedisCacheManagerBuilder com os TTLs corretos lidos das propriedades")
+    void shouldCustomizeCacheManagerWithCorrectTTLsFromProperties() {
+        // Arrange
+        Map<String, Duration> ttlMap = new HashMap<>();
+        ttlMap.put("book", Duration.ofHours(1));
+        ttlMap.put("books", Duration.ofMinutes(10));
+
+        when(cachingProperties.ttls()).thenReturn(ttlMap);
+
+        RedisCacheManager.RedisCacheManagerBuilder builder = mock(RedisCacheManager.RedisCacheManagerBuilder.class);
+        when(builder.withCacheConfiguration(anyString(), any(RedisCacheConfiguration.class))).thenReturn(builder);
+
+        ArgumentCaptor<String> cacheNameCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<RedisCacheConfiguration> cacheConfigurationCaptor = ArgumentCaptor.forClass(RedisCacheConfiguration.class);
+
+        // Act
+        RedisCacheManagerBuilderCustomizer customizer = beanConfiguration.redisCacheManagerBuilderCustomizer(cachingProperties);
+        customizer.customize(builder);
+
+        // Assert
+        verify(builder, times(2)).withCacheConfiguration(cacheNameCaptor.capture(), cacheConfigurationCaptor.capture());
+
+        Map<String, RedisCacheConfiguration> capturedConfigurations = new HashMap<>();
+        List<String> cacheNames = cacheNameCaptor.getAllValues();
+        List<RedisCacheConfiguration> cacheConfigs = cacheConfigurationCaptor.getAllValues();
+        for (int i = 0; i < cacheNames.size(); i++) {
+            capturedConfigurations.put(cacheNames.get(i), cacheConfigs.get(i));
+        }
+
+        assertEquals(Duration.ofHours(1), capturedConfigurations.get("book").getTtl());
+        assertEquals(Duration.ofMinutes(10), capturedConfigurations.get("books").getTtl());
     }
 }
