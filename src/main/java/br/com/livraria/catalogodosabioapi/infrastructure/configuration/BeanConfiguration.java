@@ -10,6 +10,8 @@ import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCust
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Duration;
@@ -33,17 +35,16 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
-        return (builder) -> builder
-                .withCacheConfiguration("book",
-                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofHours(1)))
-                .withCacheConfiguration("booksByIds",
-                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofHours(1)))
-                .withCacheConfiguration("books",
-                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(10)))
-                .withCacheConfiguration("booksByGenre",
-                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(10)))
-                .withCacheConfiguration("booksByAuthor",
-                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(10)));
+    public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer(CachingProperties cachingProperties) {
+        return (builder) -> {
+            RedisCacheConfiguration defaultCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
+                    .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
+
+            builder.cacheDefaults(defaultCacheConfig);
+
+            cachingProperties.ttls().forEach((cacheName, ttl) ->
+                    builder.withCacheConfiguration(cacheName, defaultCacheConfig.entryTtl(ttl))
+            );
+        };
     }
 }

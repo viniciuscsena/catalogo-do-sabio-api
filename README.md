@@ -48,17 +48,14 @@ Uma API REST simples e escalável para uma livraria independente, permitindo a n
 Para que o seeder de dados funcione, você deve configurar sua chave de API do Google AI Studio.
 
 1.  Obtenha sua chave de API em [Google AI Studio](https://aistudio.google.com/app/apikey).
-2.  Adicione uma variavel de ambiente na sua configuração de run GOOGLE_API_KEY com o valor da sua chave, ou, no arquivo `application.yaml` em `src/main/resources`, adicione ou atualize a seguinte propriedade:
+2.  Adicione uma variavel de ambiente na sua configuração de run da ide: "GOOGLE_API_KEY", com o valor da sua chave, ou, no arquivo `application.yaml` em `src/main/resources`, adicione ou atualize a seguinte propriedade:
 
     ```yaml
     google:
       aistudio:
         api-key: ${GOOGLE_API_KEY}
     ```
-    Alternativamente, você pode passar esta chave como uma variável de ambiente se for rodar rodar a aplicação Java pela linha de comando:
-    ```bash
-    GOOGLE_API_KEY="SUA_CHAVE_DE_API_AQUI" mvn spring-boot:run
-    ```
+    Alternativamente, você pode adicionar esta chave como variavel de ambiente do seu sistema operacional/container, ou passar esta chave como uma variável de ambiente via linha de comando, se escolher esta opção para rodar a api.
 
 ### 1.3. Execução das Dependências (MongoDB e Redis via Docker Compose)
 
@@ -90,10 +87,18 @@ Você pode iniciar a aplicação Java:
 
 1.  **Via Maven (Terminal):**
     Abra um novo terminal na raiz do projeto e execute:
+
+    Para terminal Unix:
     ```bash
-    mvn spring-boot:run
+    GOOGLE_API_KEY="SUA_CHAVE_DE_API_AQUI" mvn spring-boot:run
+    ```
+    Para terminal Windows:
+    ```bash
+    mvn spring-boot:run -DGOOGLE_API_KEY="SUA_CHAVE_DE_API_AQUI"
     ```
     * O `MongoDatabaseCharger` populará o MongoDB com 80 livros se o banco estiver vazio.
+
+
 
 2.  **Via IDE (IntelliJ IDEA, Eclipse, etc.):**
     * Abra o projeto na sua IDE.

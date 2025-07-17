@@ -38,6 +38,8 @@ class BeanConfigurationTest {
     private RecentlyViewedPort recentlyViewedPort;
     @Mock
     private BookUseCase bookUseCase;
+    @Mock
+    private CachingProperties cachingProperties;
 
     private BeanConfiguration beanConfiguration;
 
@@ -79,24 +81,28 @@ class BeanConfigurationTest {
     }
 
     @Test
-    @DisplayName("Deve customizar o RedisCacheManagerBuilder com os TTLs corretos para cada cache")
-    void shouldCustomizeCacheManagerWithCorrectTTLs() {
+    @DisplayName("Deve customizar o RedisCacheManagerBuilder com os TTLs corretos lidos das propriedades")
+    void shouldCustomizeCacheManagerWithCorrectTTLsFromProperties() {
         // Arrange
+        Map<String, Duration> ttlMap = new HashMap<>();
+        ttlMap.put("book", Duration.ofHours(1));
+        ttlMap.put("books", Duration.ofMinutes(10));
+
+        when(cachingProperties.ttls()).thenReturn(ttlMap);
+
         RedisCacheManager.RedisCacheManagerBuilder builder = mock(RedisCacheManager.RedisCacheManagerBuilder.class);
-        // Configura o mock para retornar ele mesmo ao chamar withCacheConfiguration, permitindo chamadas encadeadas.
         when(builder.withCacheConfiguration(anyString(), any(RedisCacheConfiguration.class))).thenReturn(builder);
 
         ArgumentCaptor<String> cacheNameCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<RedisCacheConfiguration> cacheConfigurationCaptor = ArgumentCaptor.forClass(RedisCacheConfiguration.class);
 
         // Act
-        RedisCacheManagerBuilderCustomizer customizer = beanConfiguration.redisCacheManagerBuilderCustomizer();
+        RedisCacheManagerBuilderCustomizer customizer = beanConfiguration.redisCacheManagerBuilderCustomizer(cachingProperties);
         customizer.customize(builder);
 
         // Assert
-        verify(builder, times(5)).withCacheConfiguration(cacheNameCaptor.capture(), cacheConfigurationCaptor.capture());
+        verify(builder, times(2)).withCacheConfiguration(cacheNameCaptor.capture(), cacheConfigurationCaptor.capture());
 
-        // Mapeia os nomes dos caches capturados para as suas configurações
         Map<String, RedisCacheConfiguration> capturedConfigurations = new HashMap<>();
         List<String> cacheNames = cacheNameCaptor.getAllValues();
         List<RedisCacheConfiguration> cacheConfigs = cacheConfigurationCaptor.getAllValues();
@@ -104,11 +110,7 @@ class BeanConfigurationTest {
             capturedConfigurations.put(cacheNames.get(i), cacheConfigs.get(i));
         }
 
-        // Verifica o TTL para cada cache específico
         assertEquals(Duration.ofHours(1), capturedConfigurations.get("book").getTtl());
-        assertEquals(Duration.ofHours(1), capturedConfigurations.get("booksByIds").getTtl());
         assertEquals(Duration.ofMinutes(10), capturedConfigurations.get("books").getTtl());
-        assertEquals(Duration.ofMinutes(10), capturedConfigurations.get("booksByGenre").getTtl());
-        assertEquals(Duration.ofMinutes(10), capturedConfigurations.get("booksByAuthor").getTtl());
     }
 }
