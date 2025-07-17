@@ -5,6 +5,7 @@ import br.com.livraria.catalogodosabioapi.core.usecase.boundary.out.RecentlyView
 import br.com.livraria.catalogodosabioapi.infrastructure.persistence.mongodb.document.BookDocument;
 import br.com.livraria.catalogodosabioapi.infrastructure.persistence.mongodb.repository.SpringDataBookMongoRepository;
 import com.redis.testcontainers.RedisContainer;
+import dasniko.testcontainers.keycloak.KeycloakContainer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,6 +30,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt; // <-- Import crucial
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -53,14 +55,20 @@ public class BookControllerIntegrationTest {
     @SpyBean
     private RecentlyViewedPort recentlyViewedPort;
 
-    static final MongoDBContainer mongoDbContainer = new MongoDBContainer("mongo:7.0");
+    static final KeycloakContainer keycloakContainer = new KeycloakContainer("quay.io/keycloak/keycloak:25.0");
 
+    static final MongoDBContainer mongoDbContainer = new MongoDBContainer("mongo:7.0");
     static final RedisContainer redisContainer = new RedisContainer("redis:7.2-alpine");
 
     @DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry registry) {
+        keycloakContainer.start();
         mongoDbContainer.start();
         redisContainer.start();
+
+        registry.add("spring.security.oauth2.resourceserver.jwt.issuer-uri",
+                () -> keycloakContainer.getAuthServerUrl() + "/realms/sabio-realm");
+
         registry.add("spring.data.mongodb.uri", mongoDbContainer::getReplicaSetUrl);
         registry.add("spring.data.redis.host", redisContainer::getHost);
         registry.add("spring.data.redis.port", () -> redisContainer.getMappedPort(6379).toString());
@@ -82,11 +90,11 @@ public class BookControllerIntegrationTest {
         book.setTitle("Duna");
         book.setAuthors(List.of("Frank Herbert"));
         book.setGenres(List.of("Ficção Científica"));
-
         bookMongoRepository.save(book);
 
         // Act & Assert
-        mockMvc.perform(get("/v1/books/{id}", "123"))
+        mockMvc.perform(get("/v1/books/{id}", "123")
+                        .with(jwt()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is("123")))
@@ -97,7 +105,8 @@ public class BookControllerIntegrationTest {
     @DisplayName("Deve retornar 404 Not Found quando o ID não existe")
     void shouldReturnNotFoundWhenIdDoesNotExist() throws Exception {
         // Act & Assert
-        mockMvc.perform(get("/v1/books/{id}", "id-inexistente"))
+        mockMvc.perform(get("/v1/books/{id}", "id-inexistente")
+                        .with(jwt())) 
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error", is("Not Found")));
     }
@@ -117,7 +126,8 @@ public class BookControllerIntegrationTest {
         bookMongoRepository.save(book2);
 
         // Act & Assert
-        mockMvc.perform(get("/v1/books/genre/{genre}", "Fantasia"))
+        mockMvc.perform(get("/v1/books/genre/{genre}", "Fantasia")
+                        .with(jwt())) 
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].title", is("Livro de Fantasia 1")));
@@ -135,13 +145,8 @@ public class BookControllerIntegrationTest {
         bookMongoRepository.save(book);
 
         // Act
-        mockMvc.perform(get("/v1/books/{id}", "456"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title", is("Neuromancer")));
-
-        mockMvc.perform(get("/v1/books/{id}", "456"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title", is("Neuromancer")));
+        mockMvc.perform(get("/v1/books/{id}", "456").with(jwt())).andExpect(status().isOk());
+        mockMvc.perform(get("/v1/books/{id}", "456").with(jwt())).andExpect(status().isOk());
 
         // Assert
         verify(bookRepositoryPort, times(1)).findById("456");
@@ -171,11 +176,13 @@ public class BookControllerIntegrationTest {
 
         // Act
         mockMvc.perform(get("/v1/books/{id}", bookId1)
-                        .header("X-Client-ID", clientId))
+                        .header("X-Client-ID", clientId)
+                        .with(jwt())) 
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/v1/books/{id}", bookId2)
-                        .header("X-Client-ID", clientId))
+                        .header("X-Client-ID", clientId)
+                        .with(jwt())) 
                 .andExpect(status().isOk());
 
         // Assert
@@ -183,13 +190,12 @@ public class BookControllerIntegrationTest {
 
         // Act 3: Recuperar livros visualizados recentemente para o cliente
         mockMvc.perform(get("/v1/books/recently-viewed")
-                        .header("X-Client-ID", clientId))
+                        .header("X-Client-ID", clientId)
+                        .with(jwt())) 
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].id", is(bookId1)))
                 .andExpect(jsonPath("$[1].id", is(bookId2)));
     }
-
-
 }

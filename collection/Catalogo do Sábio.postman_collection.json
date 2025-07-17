@@ -1,0 +1,199 @@
+{
+	"info": {
+		"_postman_id": "1d1477a4-e0fd-48a5-b752-af997bb146b0",
+		"name": "Catalogo do Sábio",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42349694"
+	},
+	"item": [
+		{
+			"name": "Get By ID",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJSNnduUjhKeElFSUVEVUJvSXI5RExwS1IzUm5HTzRhSUN6OE9Pa2lWUlhVIn0.eyJleHAiOjE3NTI3MjMzMDUsImlhdCI6MTc1MjcyMzAwNSwianRpIjoiMmE1MzUzYTEtYTRiZi00NzRjLWI0MzQtNzZiMzVmYTdmZDQyIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MTgwL3JlYWxtcy9zYWJpby1yZWFsbSIsInN1YiI6IjJlOWJmZDhlLWQ0MWEtNDQ5Yy05OTVlLWIyZWI4OWYwNDYwMSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImNhdGFsb2dvLWNsaWVudCIsInNpZCI6IjU3ZDA4YWRjLTM0NmQtNGFhZi04OWVmLTVmYTQwNjVlZjVlNiIsImFjciI6IjEiLCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsInByZWZlcnJlZF91c2VybmFtZSI6ImxlaXRvciJ9.PchMXxzymGQt-yQ8B1kTNKPbiW_57lc457qmtTxyX3pZG4yTvhP_EI3f4dPpxSFdCgFJc8xwNPxtG90KWCyuf7bxrWxye2ygLQ9KWCg7e8IjDDlhm4wLBc5Oq0zLHinmRUEdcbGOwy01TSrwX_x4htKxLF67pQoqAsygV_3VmQpDoKdAKjdNeTunEll32dgbMKJlqrjKWP9EmzK1cLXhu_qs6rgrHO_xezKiTWOEBq-OkyJLnkusuXhrDLkyIZuuCVjaYXK5H7Q-9atmxBodannnXys2qdpkAnqK_AeOhW-fFzBPXUSefosGZeQPOUvvA0LKyXRuvNWXH4Kae2p8Kw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/catalogo-do-sabio/v1/books/6875f73909f189b8798b8277",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"catalogo-do-sabio",
+						"v1",
+						"books",
+						"6875f73909f189b8798b8277"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJZNmtTTU5PTzJVQXh3cktOOXdLNnp3NFpkZXBDRGNVYTU1V0NRMlRaV0prIn0.eyJleHAiOjE3NTI3MjI4OTksImlhdCI6MTc1MjcyMjU5OSwianRpIjoiODA5M2QxNzYtYTc1MC00ZDE4LWFmMGItMTUyMWQzNTY5OTVlIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MTgwL3JlYWxtcy9zYWJpby1yZWFsbSIsInN1YiI6ImQ4ZGNmMjZmLTM0NmItNDc3MS05YWU1LWJlZWJjZWFmMmRlMSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImNhdGFsb2dvLWNsaWVudCIsInNpZCI6ImIyNmI5Y2JlLTRlZTMtNDMyNi1iZTU1LTA1N2ZiY2NlYjI4MSIsImFjciI6IjEiLCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsInByZWZlcnJlZF91c2VybmFtZSI6ImxlaXRvciJ9.cVlR3Hi2t11tVB8W91LSPxWl50FYBHfoiM-epn6HzZORgOpYLDC7sULrAKp1Hw_s_BKbGe4xgAjIoPOpRNRcp_1T61I-1svllMiabJ4O56nOlYntAb6RtJCWtLpQZlxXAWsCcpUU6XcZ4NlH8J3vsxU-mJJGECSmq6TF3ZR42aEd2GnGkEnD__jIqFTTOrKMRsft4fYJauYNbaEdZHd7Guu20buo9tiyl9zXN7a3p1OnDWC_lRLdjmbkiUoSZ19q3imqYc2HuvebDndLXj1KWC5tJhnfycDJZSeLoloqyFDJWyWuj1dbBbiosdmZb3asULEy2XfKmrBurQOuPAJUyQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/catalogo-do-sabio/v1/books/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"catalogo-do-sabio",
+						"v1",
+						"books",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get By Genre",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJSNnduUjhKeElFSUVEVUJvSXI5RExwS1IzUm5HTzRhSUN6OE9Pa2lWUlhVIn0.eyJleHAiOjE3NTI3MjMzMDUsImlhdCI6MTc1MjcyMzAwNSwianRpIjoiMmE1MzUzYTEtYTRiZi00NzRjLWI0MzQtNzZiMzVmYTdmZDQyIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MTgwL3JlYWxtcy9zYWJpby1yZWFsbSIsInN1YiI6IjJlOWJmZDhlLWQ0MWEtNDQ5Yy05OTVlLWIyZWI4OWYwNDYwMSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImNhdGFsb2dvLWNsaWVudCIsInNpZCI6IjU3ZDA4YWRjLTM0NmQtNGFhZi04OWVmLTVmYTQwNjVlZjVlNiIsImFjciI6IjEiLCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsInByZWZlcnJlZF91c2VybmFtZSI6ImxlaXRvciJ9.PchMXxzymGQt-yQ8B1kTNKPbiW_57lc457qmtTxyX3pZG4yTvhP_EI3f4dPpxSFdCgFJc8xwNPxtG90KWCyuf7bxrWxye2ygLQ9KWCg7e8IjDDlhm4wLBc5Oq0zLHinmRUEdcbGOwy01TSrwX_x4htKxLF67pQoqAsygV_3VmQpDoKdAKjdNeTunEll32dgbMKJlqrjKWP9EmzK1cLXhu_qs6rgrHO_xezKiTWOEBq-OkyJLnkusuXhrDLkyIZuuCVjaYXK5H7Q-9atmxBodannnXys2qdpkAnqK_AeOhW-fFzBPXUSefosGZeQPOUvvA0LKyXRuvNWXH4Kae2p8Kw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/catalogo-do-sabio/v1/books/genre/Ficção%20Científica",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"catalogo-do-sabio",
+						"v1",
+						"books",
+						"genre",
+						"Ficção%20Científica"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get By Author",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJZNmtTTU5PTzJVQXh3cktOOXdLNnp3NFpkZXBDRGNVYTU1V0NRMlRaV0prIn0.eyJleHAiOjE3NTI3MjI3ODQsImlhdCI6MTc1MjcyMjQ4NCwianRpIjoiMDE2YTQyZmQtNjMyOC00ZjljLWJlYmMtZWJjYmNlZTMyYWE0IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MTgwL3JlYWxtcy9zYWJpby1yZWFsbSIsInN1YiI6ImQ4ZGNmMjZmLTM0NmItNDc3MS05YWU1LWJlZWJjZWFmMmRlMSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImNhdGFsb2dvLWNsaWVudCIsInNpZCI6IjBkMDgxYTllLWI0ZGEtNGJlYy1hM2I1LTIyMzgwMTU2NjViMSIsImFjciI6IjEiLCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsInByZWZlcnJlZF91c2VybmFtZSI6ImxlaXRvciJ9.hFSGTZY5rt5tcX2x3m09SK83HljXWnE_G5qZOpwyy-UNxTYOs0OKpns9b7_hqXyloaRQhEYGrD-i145wIFzZQY1ANQO93yXr1i6LLRcwc9tC3WK0mRGBgC8CWV0s8uuXMWjyctyob0T2OytPzXb-CKkAk1bjiy-Z4U6MZKCCwwyhB5dmRYsEh1hpEovK2ZOKQnD36Zpz04ByCU7WZViYFjYw_acbkf5O9AFhPw3Bbbnio_BahzCBDt3mCDQMWDo7dzQtUt7iYKLVg24TdjCFV3iDqtqFsboOXjxbetUfc_O5xLhSvp4qB6N4LrMp5zFk_BP5ieAGadpyvjd5VOe9Hg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/catalogo-do-sabio/v1/books/author/Machado%20de%20Assis",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"catalogo-do-sabio",
+						"v1",
+						"books",
+						"author",
+						"Machado%20de%20Assis"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sabio Auth",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "catalogo-client",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "AIzaSyDzMSM-0jmUGtkw8KDoQYuEk95EmIOGK_Q",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "leitor",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8180/realms/sabio-realm/protocol/openid-connect/token",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8180",
+					"path": [
+						"realms",
+						"sabio-realm",
+						"protocol",
+						"openid-connect",
+						"token"
+					]
+				},
+				"description": "Generated from cURL: curl --location 'http://localhost:8180/realms/sabio-realm/protocol/openid-connect/token' \\\n--header 'Content-Type: application/x-www-form-urlencoded' \\\n--data-urlencode 'client_id=catalogo-client' \\\n--data-urlencode 'client_secret=<SEU_CLIENT_SECRET_AQUI>' \\\n--data-urlencode 'username=leitor' \\\n--data-urlencode 'password=password' \\\n--data-urlencode 'grant_type=password'"
+			},
+			"response": []
+		}
+	]
+}

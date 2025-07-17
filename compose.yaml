@@ -17,6 +17,18 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+  keycloak:
+    container_name: catalogo-keycloak
+    image: quay.io/keycloak/keycloak:26.0
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    ports:
+      - 8180:8080
+    volumes:
+      - ./keycloak-config/realm-config.json:/opt/keycloak/data/import/realm-config.json
+    command: [ "start-dev", "--import-realm" ]
+    restart: unless-stopped
 
 volumes:
   mongo_data:
