@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>br.com.livraria</groupId>
 	<artifactId>catalogo-do-sabio-api</artifactId>
-	<version>1.0.0</version>
+	<version>1.2.0</version>
 	<name>catalogo-do-sabio-api</name>
 	<description>API para expor livros e informações para canais digitais de uma livraria.</description>
 	<properties>
